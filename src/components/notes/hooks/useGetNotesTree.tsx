@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react'
 import Note from '@/type/notes.type'
 import { useQuery } from '@tanstack/react-query'
@@ -6,8 +7,7 @@ import { useParams, usePathname } from 'next/navigation'
 const useGetNotesTree = () => {
     const { isPending, data } = useQuery({
         queryKey: ['repoData'],
-        queryFn: () =>
-            fetch('http://localhost:3000/api/notes').then((res) => res.json()),
+        queryFn: () => fetch('/api/notes').then((res) => res.json()),
     })
     const [activeList, setActiveList] = useState<Note[]>([])
     const { params } = useParams()
