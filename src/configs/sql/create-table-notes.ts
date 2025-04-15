@@ -26,7 +26,7 @@ export default async () => {
             ('Ava1', FALSE, 'a.a'),
             ('Ava2', TRUE, 'a.b'),
             ('Ava2', FALSE, 'a.b.a'),
-            ('Ava1', TRUE, 'a.b.a'),
+            ('Ava1', TRUE, 'a.b.b'),
             ('Clark', TRUE, 'c'),
             ('Clark', TRUE, 'c.a'),
             ('Clark', TRUE, 'c.a.b'),

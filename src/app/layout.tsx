@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Alumni_Sans } from 'next/font/google'
 import './globals.css'
+import Store from '@/configs/store'
 
 const fontsMono = Alumni_Sans({
     variable: '--font-mono',
@@ -20,7 +21,7 @@ const Layout = ({
     return (
         <html lang="en">
             <body className={`${fontsMono.variable} text-text text-xl`}>
-                {children}
+                <Store>{children}</Store>
             </body>
         </html>
     )
