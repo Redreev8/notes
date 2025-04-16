@@ -1,22 +1,35 @@
 'use client'
 import TildaList from '../ui/tilda-list'
 import ItemNote from './item-note'
-import { FC } from 'react'
+import { AreaHTMLAttributes, FC, MouseEvent } from 'react'
 import Note from '@/type/notes.type'
 import { ItemGroup } from '.'
 
-export interface ListNoteProps {
+export interface ListNoteProps extends AreaHTMLAttributes<HTMLUListElement> {
     list: Note[]
+    onToGroupOrNote?: (e: MouseEvent<HTMLAnchorElement>) => void
 }
 
-const ListNote: FC<ListNoteProps> = ({ list }) => {
+const ListNote: FC<ListNoteProps> = ({ list, onToGroupOrNote, ...props }) => {
     return (
-        <TildaList className="w-full max-w-[920px]">
+        <TildaList {...props}>
             {list.map((el) => {
                 if (!el.groups) {
-                    return <ItemNote {...el} key={el.url} />
+                    return (
+                        <ItemNote
+                            onToNote={onToGroupOrNote}
+                            {...el}
+                            key={el.url}
+                        />
+                    )
                 }
-                return <ItemGroup {...el} key={el.url} />
+                return (
+                    <ItemGroup
+                        onToGroup={onToGroupOrNote}
+                        {...el}
+                        key={el.url}
+                    />
+                )
             })}
         </TildaList>
     )

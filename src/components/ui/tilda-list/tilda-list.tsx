@@ -4,7 +4,7 @@ import { AreaHTMLAttributes, FC } from 'react'
 export interface TildaListProps extends AreaHTMLAttributes<HTMLUListElement> {}
 
 const TildaList: FC<TildaListProps> = ({ className, children, ...props }) => {
-    const cl = classNames(className, 'flex flex-col gap-5')
+    const cl = classNames(className, 'flex flex-col gap-4')
     return (
         <ul className={cl} {...props}>
             {children}

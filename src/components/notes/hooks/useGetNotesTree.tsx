@@ -3,13 +3,15 @@ import { useState, useEffect } from 'react'
 import Note from '@/type/notes.type'
 import { useQuery } from '@tanstack/react-query'
 import { useParams, usePathname } from 'next/navigation'
+import getNotes from '../api/get-notes'
 
 const useGetNotesTree = () => {
     const { isPending, data } = useQuery({
-        queryKey: ['repoData'],
-        queryFn: () => fetch('/api/notes').then((res) => res.json()),
+        queryKey: ['notes'],
+        queryFn: () => getNotes(),
     })
     const [activeList, setActiveList] = useState<Note[]>([])
+    const [prevList, setPrevList] = useState<Note[]>([])
     const { params } = useParams()
     const pathname = usePathname()
 
@@ -30,21 +32,25 @@ const useGetNotesTree = () => {
         }, [] as string[])
         let k: number = 0
         let activeList: Note[] = data
+        let prevList: Note[] = data
         while (keys[k]) {
             for (let i = 0; i < activeList.length; i++) {
                 const note = activeList[i]
                 if (!note.url.includes(keys[k])) continue
+                prevList = [...activeList]
                 activeList = note.groups!
                 k++
                 break
             }
         }
         setActiveList(activeList)
+        setPrevList(prevList)
     }, [data, pathname])
 
     return {
         isPending,
         activeList,
+        prevList,
     }
 }
 
