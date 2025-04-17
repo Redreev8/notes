@@ -6,3 +6,7 @@ export { default as PageNotes } from './page-notes'
 
 // hooks
 export { default as useGetNotesTree } from './hooks/useGetNotesTree'
+
+// api
+export { default as fetchNotes } from './api/feth'
+export { default as getNotes } from './api/get-notes'
