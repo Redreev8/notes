@@ -1,5 +1,5 @@
-import { createTableNotes } from './configs/sql'
+import { migrate } from './configs/sql'
 
 export const register = () => {
-    createTableNotes()
+    migrate()
 }
