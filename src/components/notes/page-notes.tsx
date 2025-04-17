@@ -9,12 +9,19 @@ const PageNotes = () => {
     const { isPending, prevList, activeList } = useGetNotesTree()
     const [isToGroup, setIsToGroup] = useState<boolean>(false)
 
-    const { handelClickHref, to } = useDaleyToHref({
+    const { handelClickHref, to, toNoAnimate } = useDaleyToHref({
         onClick: () => {
+            console.log(prevList.length)
+            if (prevList.length === 0) {
+                toNoAnimate()
+                return
+            }
             setIsToGroup(true)
         },
         cbTo: () => {
-            setIsToGroup(false)
+            setTimeout(() => {
+                setIsToGroup(false)
+            }, 1000)
         },
     })
     const handelAnimateEnd = (e: AnimationEvent<HTMLDivElement>) => {
