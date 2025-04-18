@@ -9,7 +9,7 @@ export default async () => {
     await sql.query(`
         CREATE TABLE IF NOT EXISTS ${nameTableNoteContent} (
             content TEXT,
-            path VARCHAR(100) REFERENCES Notes (path) UNIQUE
+            path ltree REFERENCES Notes (path) UNIQUE
         )
     `)
     await sql.query(`
