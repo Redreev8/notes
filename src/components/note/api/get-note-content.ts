@@ -1,8 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
 import fetchNotes from './fetch'
-import Note from '@/type/notes.type'
 
-const getNoteContent = async (config?: AxiosRequestConfig): Promise<Note[]> => {
+const getNoteContent = async (config?: AxiosRequestConfig): Promise<string> => {
     const { data } = await fetchNotes('/', config)
 
     return data
