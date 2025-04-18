@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios'
-import fetchNotes from './feth'
+import fetchNotes from './fetch'
 import Note from '@/type/notes.type'
 
 const getNotes = async (config?: AxiosRequestConfig): Promise<Note[]> => {
