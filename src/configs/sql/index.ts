@@ -6,7 +6,7 @@ export { default as createTableNoteContent } from './create-table-note-content'
 
 const sql = neon(`${process.env.DATABASE_URL}`)
 
-export const migrate = async () => {
+export const migrate = () => {
     createTableNotes()
     createTableNoteContent()
 }
