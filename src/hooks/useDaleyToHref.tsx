@@ -18,7 +18,6 @@ const useDaleyToHref = ({ onClick, cbTo }: useDaleyToHrefProps = {}) => {
         if (onClick) onClick(e)
     }
     const to = async () => {
-        console.log(href)
         if (!href) return
         push(href)
         setHref(null)

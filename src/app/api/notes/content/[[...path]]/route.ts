@@ -12,7 +12,6 @@ export const GET = async (
 ) => {
     try {
         const { path } = await params
-        console.log()
         const [noteContent] = (await sql.query(
             `
             SELECT *

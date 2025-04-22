@@ -55,7 +55,6 @@ const useArrayObject = <T extends object>(
         setArray((prev) => {
             if (!prev[i]) return prev
             prev[i] = updateObj
-            console.log(updateObj)
             return [...prev]
         })
     }

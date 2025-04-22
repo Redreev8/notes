@@ -4,7 +4,7 @@ import Container from '../ui/container'
 import useGetNotesTree from './hooks/useGetNotesTree'
 import ListNote from './list-notes'
 import useDaleyToHref from '@/hooks/useDaleyToHref'
-import { AnimationEvent, useEffect, useState } from 'react'
+import { AnimationEvent, useState } from 'react'
 const PageNotes = () => {
     const { isPending, prevList, activeList } = useGetNotesTree()
     const [isToGroup, setIsToGroup] = useState<boolean>(false)
@@ -14,7 +14,6 @@ const PageNotes = () => {
         onClick: (e) => {
             const link = e.currentTarget
             if (link.href!.match(/\/note\//)) {
-                console.log(link.href!.match(/\/note\//))
                 setIsToNote(true)
                 return
             }
@@ -28,9 +27,6 @@ const PageNotes = () => {
             setIsToGroup(false)
         },
     })
-    useEffect(() => {
-        console.log(isToNote)
-    }, [isToNote])
     const handelAnimateEnd = (e: AnimationEvent<HTMLDivElement>) => {
         if (e.target !== e.currentTarget) return
         if (isToGroup || isToNote) to()
