@@ -1,7 +1,7 @@
 'use client'
 import useArrayObject from '@/hooks/useArray'
 import { FC, FocusEvent, FormEvent, useEffect, useRef, useState } from 'react'
-import parserMarkdownToTree from './parser-markdown-to-tree'
+import { parserMarkdownToTree } from './parser-markdown-to-tree'
 import getInlineBlocks from './get-inline-blocks'
 import Title from '../title'
 import Text from '../text'
@@ -9,6 +9,7 @@ import List from '../list'
 import ListNumber from '../list-number'
 import { getCursorPositionLength, setCursorEditable } from '@/helper/cursor'
 import debounceArrow from '@/helper/debounce'
+import { formatBlock } from './format-blocks'
 
 export interface EditorProps {
     children: string
@@ -16,12 +17,14 @@ export interface EditorProps {
 }
 
 export interface Block {
+    id: string
     type: string
-    children: Block[]
+    children?: Block[]
     position: {
         end: { line: number; column: number; offset: number }
         start: { line: number; column: number; offset: number }
     }
+    markdown: string
     value?: string
     url?: string
     ordered?: boolean
@@ -29,24 +32,20 @@ export interface Block {
 }
 
 export const parentBlock = ['heading']
+const debounceParser = (markdown: string) =>
+    parserMarkdownToTree.parse(markdown).children as Block[]
 
-const Editor: FC<EditorProps> = ({ children, onChange }) => {
-    const [markdown, setMarkdown] = useState<string>('')
+const Editor: FC<EditorProps> = ({ children }) => {
     const [markdownTree, setMarkdownTree] = useState<Block[]>([])
-    const [blocks] = useArrayObject<Block>(markdownTree)
+    const [blocks, { update }] = useArrayObject<Block>(markdownTree, {
+        format: (newObj) => formatBlock(newObj, children),
+    })
     const [isHover, setHover] = useState<number | null>(null)
     const targetRef = useRef<HTMLElement>(null)
     const targetCursorRef = useRef<number>(0)
-
     useEffect(() => {
-        setMarkdown(children)
+        setMarkdownTree(() => debounceParser(children))
     }, [children])
-    useEffect(() => {
-        setMarkdownTree(
-            () => parserMarkdownToTree.parse(markdown).children as Block[],
-        )
-        if (onChange) onChange(markdown)
-    }, [markdown])
 
     useEffect(() => {
         if (!targetRef.current) return
@@ -60,30 +59,19 @@ const Editor: FC<EditorProps> = ({ children, onChange }) => {
                 const target = e.target as HTMLElement
                 if (!target) return
                 targetCursorRef.current = getCursorPositionLength(target)
+                let content: string = target.textContent!
                 if (b.type === 'list') {
                     const items = [...target.childNodes].map(
                         (el) => el.textContent!,
                     )
-                    setMarkdown((prev) => {
-                        return (
-                            prev.substring(0, b.position.start.offset) +
-                            '\n' +
-                            items.join('\n') +
-                            '\n' +
-                            prev.substring(b.position.end.offset, prev.length)
-                        )
-                    })
-                    return
+                    content = items.join(' \n') as string
                 }
-                setMarkdown((prev) => {
-                    return (
-                        prev.substring(0, b.position.start.offset) +
-                        '\n' +
-                        target.textContent +
-                        '\n' +
-                        prev.substring(b.position.end.offset, prev.length)
-                    )
-                })
+                const parsBlockContent = debounceParser(content)[0]
+                const blocks = formatBlock(
+                    { ...parsBlockContent },
+                    content,
+                ) as Block & { id: string }
+                update(i, { ...b, ...blocks })
             },
         )
         const attributes = {
@@ -101,9 +89,7 @@ const Editor: FC<EditorProps> = ({ children, onChange }) => {
         }
         const content = getInlineBlocks({
             block: b,
-            markdown: markdown,
             isHover: isHover === i,
-            parent: parentBlock.includes(b.type) ? b : undefined,
         })
 
         if (b.type === 'heading') {

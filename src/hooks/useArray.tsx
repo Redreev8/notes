@@ -18,8 +18,19 @@ type returnUseArrayObject<T extends {}> = [
     },
 ]
 
+export interface useArrayObjectProps<T extends {}> {
+    format?: (newObj: Obj<T>, el: T) => Obj<T>
+    onUnshift?: (newObj: T | Obj<T>) => void
+    onPush?: (newObj: T | Obj<T>) => void
+    onUpdate?: (i: number, updateObj: Obj<T>) => void
+    onInsert?: (i: number, newObj: T | Obj<T>) => void
+    onRemove?: (i: number) => void
+    onSwap?: (from: number, to: number) => void
+}
+
 const useArrayObject = <T extends object>(
     initialValue: (T | Obj<T>)[] = [],
+    props: useArrayObjectProps<T> = {},
 ): returnUseArrayObject<T> => {
     const [array, setArray] = useState<Obj<T>[]>([])
 
@@ -28,10 +39,11 @@ const useArrayObject = <T extends object>(
             (prev) =>
                 initialValue.map((el, i) => {
                     if (prev[i]) {
+                        if (props.format) return props.format(prev[i], el)
                         return { ...prev[i], ...el }
                     }
                     const obj = (el as Obj<T>).id ? el : { id: getId(), ...el }
-
+                    if (props.format) return props.format(obj as Obj<T>, el)
                     return obj
                 }) as Obj<T>[],
         )
@@ -42,6 +54,7 @@ const useArrayObject = <T extends object>(
         if (!obj.id) {
             obj.id = getId()
         }
+        if (props.onUnshift) props.onUnshift(obj)
         setArray((prev) => [obj, ...prev])
     }
     const push = (newObj: T | Obj<T>) => {
@@ -49,9 +62,11 @@ const useArrayObject = <T extends object>(
         if (!obj.id) {
             obj.id = getId()
         }
+        if (props.onPush) props.onPush(obj)
         setArray((prev) => [...prev, obj])
     }
     const update = (i: number, updateObj: Obj<T>) => {
+        if (props.onUpdate) props.onUpdate(i, updateObj)
         setArray((prev) => {
             if (!prev[i]) return prev
             prev[i] = updateObj
@@ -63,6 +78,7 @@ const useArrayObject = <T extends object>(
         if (!obj.id) {
             obj.id = getId()
         }
+        if (props.onInsert) props.onInsert(i, newObj)
         setArray((prev) => {
             if (!prev[i]) return prev
             prev.splice(i, 0, obj)
@@ -70,12 +86,14 @@ const useArrayObject = <T extends object>(
         })
     }
     const remove = (i: number) => {
+        if (props.onRemove) props.onRemove(i)
         setArray((prev) => {
             if (!prev[i]) return prev
             return prev.filter((_, index) => i !== index)
         })
     }
     const swap = (from: number, to: number) => {
+        if (props.onSwap) props.onSwap(from, to)
         setArray((prev) => {
             if (!prev[from] || !prev[to]) {
                 return prev

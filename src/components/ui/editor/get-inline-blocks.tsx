@@ -3,27 +3,17 @@ import { Block } from './editor'
 
 interface getInlineBlocksProps {
     block: Block
-    markdown: string
     isHover: boolean
-    parent?: Block
 }
 
-const getInlineBlocks = ({
-    block,
-    markdown,
-    isHover,
-    parent,
-}: getInlineBlocksProps) => {
+const getInlineBlocks = ({ block, isHover }: getInlineBlocksProps) => {
     if (!block.children) {
         return null
     }
     const content = block.children.map((el, i) => {
         if (el.type === 'text') {
             if (isHover) {
-                return markdown.substring(
-                    (parent ?? el).position.start.offset,
-                    (parent ?? el).position.end.offset,
-                )
+                return el.markdown
             }
             return el.value
         }
@@ -32,9 +22,7 @@ const getInlineBlocks = ({
                 <em key={i}>
                     {getInlineBlocks({
                         block: el,
-                        markdown,
                         isHover,
-                        parent: parent ?? el,
                     })}
                 </em>
             )
@@ -44,9 +32,7 @@ const getInlineBlocks = ({
                 <strong key={i}>
                     {getInlineBlocks({
                         block: el,
-                        markdown,
                         isHover,
-                        parent: parent ?? el,
                     })}
                 </strong>
             )
@@ -56,9 +42,7 @@ const getInlineBlocks = ({
                 <a key={i} href={'#' + el.url}>
                     {getInlineBlocks({
                         block: el,
-                        markdown,
                         isHover,
-                        parent: parent ?? el,
                     })}
                 </a>
             )
@@ -68,7 +52,6 @@ const getInlineBlocks = ({
                 <li key={i}>
                     {getInlineBlocks({
                         block: el,
-                        markdown,
                         isHover,
                     })}
                 </li>
@@ -77,7 +60,6 @@ const getInlineBlocks = ({
         if (el.type === 'paragraph') {
             return getInlineBlocks({
                 block: el,
-                markdown,
                 isHover,
             })
         }
